@@ -34,16 +34,43 @@ func checkFile() string {
 	return res[1]
 }
 
-func clean() {
-	p, _ := filepath.Abs("./testpath")
+func clean(path string) {
+	p, _ := filepath.Abs(path)
 	os.RemoveAll(p)
 }
 
 func TestWrite(t *testing.T) {
 	st, err := storage.New("./testpath")
 	require.NoError(t, err)
-	defer clean()
+	defer clean("./testpath")
 	err = st.Write(context.Background(), testData)
 	require.NoError(t, err)
 	require.Equal(t, valid, checkFile())
 }
+
+func TestWriteError(t *testing.T) {
+	path := "/sys"
+	st, err := storage.New(path)
+	require.NoError(t, err)
+	defer clean(path)
+	err = st.Write(context.Background(), testData)
+	require.Error(t, err)
+}
+
+func TestWriteContext(t *testing.T) {
+	st, err := storage.New("./testpath")
+	require.NoError(t, err)
+	defer clean("./testpath")
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	d := make(chan struct{}, 1)
+	go func() {
+		err = st.Write(ctx, testData)
+		d <- struct{}{}
+	}()
+	<-d
+	require.Error(t, err)
+	require.Equal(t, "done with context", err.Error())
+}
+
+// TODO: More tests here
