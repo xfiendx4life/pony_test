@@ -1,42 +1,47 @@
 package process
 
 import (
+	"context"
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
+	"log"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
-var knt int
+// Creates pool of workers to proceed messages
+// func createPool(num int, )
+// //TODO: set num in config
+
 var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 	// TODO: Concurrent procceed messages
+
 	fmt.Printf("Topic: %s\n", msg.Topic())
 	fmt.Printf("MSG: %s\n", msg.Payload())
-	knt++
 }
 
-func Work() {
-	knt = 0
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+func Work(ctx context.Context, host string, port int, stop chan struct{}) (err error) {
+	select {
+	case <-ctx.Done():
+		return fmt.Errorf("done with context")
+	default:
+		opts := MQTT.NewClientOptions().AddBroker(fmt.Sprintf("tcp://%s:%d", host, port)) //"tcp://104.236.0.154:1883"
+		opts.SetClientID("pony")
+		opts.SetDefaultPublishHandler(f)
+		topic := "/devices/+/state"
 
-	opts := MQTT.NewClientOptions().AddBroker("tcp://104.236.0.154:1883")
-	opts.SetClientID("pony")
-	opts.SetDefaultPublishHandler(f)
-	topic := "/devices/+/state"
-
-	opts.OnConnect = func(c MQTT.Client) {
-		if token := c.Subscribe(topic, 0, f); token.Wait() && token.Error() != nil {
-			panic(token.Error())
+		opts.OnConnect = func(c MQTT.Client) {
+			if token := c.Subscribe(topic, 0, f); token.Wait() && token.Error() != nil {
+				err = fmt.Errorf("stopped recieving messages: %s", token.Error())
+			}
 		}
+		client := MQTT.NewClient(opts)
+		if token := client.Connect(); token.Wait() && token.Error() != nil {
+			err = fmt.Errorf("stopped recieving messages: %s", token.Error())
+		} else {
+			log.Printf("Connected to server\n")
+		}
+		<-stop
+		return fmt.Errorf("stopeed by user")
 	}
-	client := MQTT.NewClient(opts)
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		panic(token.Error())
-	} else {
-		fmt.Printf("Connected to server\n")
-	}
-	<-c
+
 }

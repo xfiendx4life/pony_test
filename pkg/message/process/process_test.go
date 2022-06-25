@@ -1,17 +1,19 @@
 package process_test
 
 import (
+	"context"
 	"testing"
+	"time"
 
 	"github.com/xfiendx4life/ponytest/pkg/message/process"
 )
 
 func TestRead(t *testing.T) {
-	test := make(chan struct{}, 1)
+	st := make(chan struct{})
 	go func() {
-		process.Work()
-		test <- struct{}{}
+		process.Work(context.Background(), "104.236.0.154", 1883, st)
 	}()
-	<-test
+	time.Sleep(20 * time.Second)
+	st <- struct{}{}
 
 }
