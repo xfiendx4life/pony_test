@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -32,7 +33,10 @@ func (u *uCase) Produce() CaseWorker {
 			TimeStamp: time.Now(),
 		}
 		go func() {
-			err <- u.store.Write(context.Background(), res)
+			if er := u.store.Write(context.Background(), res); er != nil {
+				fmt.Println("from wrkr")
+				err <- er
+			}
 		}()
 		done <- &res
 		log.Printf("wrkr %d sent result\n", id)

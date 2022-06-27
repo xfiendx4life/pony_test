@@ -56,6 +56,8 @@ func (mq *MQTTProcess) Work(ctx context.Context, host string, port int, stop cha
 			log.Printf("Connected to server\n")
 		}
 		<-stop
-		return fmt.Errorf("stopeed by user")
+		err = fmt.Errorf("stopeed by user")
+		log.Println(err)
+		return err
 	}
 }

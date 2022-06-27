@@ -12,6 +12,8 @@ import (
 	"github.com/xfiendx4life/ponytest/pkg/message/usecase"
 )
 
+var commonStorage = sync.Map{}
+
 func main() {
 	store, err := storage.New("storage")
 	if err != nil {
@@ -24,18 +26,21 @@ func main() {
 	pr := process.New(&sync.Map{}, uc.Produce())
 	st := make(chan struct{})
 	go func() {
-		pr.Work(ctx, "104.236.0.154", 1883, st)
+		err = pr.Work(ctx, "104.236.0.154", 1883, st)
+		log.Println(err)
 	}()
 	go func(ctx context.Context) {
-		select {
-		case m := <-pr.Done:
-			// TODO: Write to sync.Mutex
-			log.Println(m)
-		case err := <-pr.Ers:
-			log.Println(err)
-			cancel()
-		case <-ctx.Done():
-			return
+		for {
+			select {
+			case m := <-pr.Done:
+				// TODO: Write to sync.Mutex
+				commonStorage.Store(m.ID, m)
+				log.Println(m)
+			case err := <-pr.Ers:
+				log.Println(err)
+			case <-ctx.Done():
+				return
+			}
 		}
 	}(ctx)
 	for {
