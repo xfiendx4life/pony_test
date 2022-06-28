@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/xfiendx4life/ponytest/pkg/message/process"
 	"github.com/xfiendx4life/ponytest/pkg/message/usecase"
 	"github.com/xfiendx4life/ponytest/pkg/models"
+	"github.com/xfiendx4life/ponytest/pkg/process"
 )
 
 type mockStore struct {

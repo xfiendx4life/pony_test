@@ -7,9 +7,9 @@ import (
 	"os/signal"
 	"sync"
 
-	"github.com/xfiendx4life/ponytest/pkg/message/process"
 	"github.com/xfiendx4life/ponytest/pkg/message/storage"
 	"github.com/xfiendx4life/ponytest/pkg/message/usecase"
+	"github.com/xfiendx4life/ponytest/pkg/process"
 )
 
 var commonStorage = sync.Map{}
