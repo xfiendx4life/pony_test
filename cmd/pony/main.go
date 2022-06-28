@@ -33,7 +33,6 @@ func main() {
 		for {
 			select {
 			case m := <-pr.Done:
-				// TODO: Write to sync.Mutex
 				commonStorage.Store(m.ID, m)
 				log.Println(m)
 			case err := <-pr.Ers:

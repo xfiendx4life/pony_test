@@ -3,6 +3,7 @@ package deliver
 import (
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/xfiendx4life/ponytest/pkg/models"
@@ -19,9 +20,9 @@ func New(cStorage *sync.Map) Deliver {
 }
 
 func (d *del) ListID(ctx echo.Context) error {
-	res := make([]models.Message, 0)
+	res := make([]time.Time, 0)
 	d.commonStorage.Range(func(key, value any) bool {
-		res = append(res, value.(models.Message))
+		res = append(res, value.(models.Message).TimeStamp)
 		return true
 	})
 	if len(res) > 0 {
@@ -31,7 +32,6 @@ func (d *del) ListID(ctx echo.Context) error {
 
 }
 
-// TODO: Test this shit
 func (d *del) GetDataById(ctx echo.Context) error {
 	id := ctx.Param("id")
 	if data, ok := d.commonStorage.Load(id); ok {
