@@ -7,9 +7,11 @@ import (
 	"os/signal"
 	"sync"
 
+	"github.com/xfiendx4life/ponytest/pkg/message/deliver"
 	"github.com/xfiendx4life/ponytest/pkg/message/storage"
 	"github.com/xfiendx4life/ponytest/pkg/message/usecase"
 	"github.com/xfiendx4life/ponytest/pkg/process"
+	"github.com/xfiendx4life/ponytest/pkg/rest"
 )
 
 var commonStorage = sync.Map{}
@@ -24,7 +26,10 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	uc := usecase.New(store)
 	pr := process.New(&sync.Map{}, uc.Produce())
+	del := deliver.New(&commonStorage)
 	st := make(chan struct{})
+	server := rest.New(del)
+	go server.StartServer(ctx, "localhost", 8000)
 	go func() {
 		err = pr.Work(ctx, "104.236.0.154", 1883, st)
 		log.Println(err)

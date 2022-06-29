@@ -22,7 +22,7 @@ func New(cStorage *sync.Map) Deliver {
 func (d *del) ListID(ctx echo.Context) error {
 	res := make([]time.Time, 0)
 	d.commonStorage.Range(func(key, value any) bool {
-		res = append(res, value.(models.Message).TimeStamp)
+		res = append(res, value.(*models.Message).TimeStamp)
 		return true
 	})
 	if len(res) > 0 {
