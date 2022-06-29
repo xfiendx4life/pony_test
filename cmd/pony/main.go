@@ -25,7 +25,7 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt)
 	ctx, cancel := context.WithCancel(context.Background())
 	uc := usecase.New(store)
-	pr := process.New(&sync.Map{}, uc.Produce())
+	pr := process.New(&commonStorage, uc.Produce())
 	del := deliver.New(&commonStorage)
 	st := make(chan struct{})
 	server := rest.New(del)

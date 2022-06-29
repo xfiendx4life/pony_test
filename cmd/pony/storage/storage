@@ -1,1 +1,4 @@
 2022/06/29-04:14:55: FrmCtr009 - {"t_air":25.7,"h_air":44.8,"co2":0,"time":58473,"read_errs":0,"outs_state":61,"uptime":243600,"wifi":-48}
+2022/06/29-11:30:03: FrmCtr009 - {"t_air":25.9,"h_air":43,"co2":0,"time":84573,"read_errs":0,"outs_state":1,"uptime":269700,"wifi":-48}
+2022/06/29-11:50:11: FrmCtr009 - {"t_air":25.9,"h_air":43.6,"co2":0,"time":85772,"read_errs":0,"outs_state":0,"uptime":270900,"wifi":-41}
+2022/06/29-11:51:10: FrmCtr008 - {"t_air":0,"h_air":0,"co2":0,"time":85823,"read_errs":0,"outs_state":0,"uptime":510901,"wifi":-62}

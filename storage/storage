@@ -17,3 +17,6 @@
 2022/06/29-10:14:55: FrmCtr009 - {"t_air":25.9,"h_air":41.5,"co2":0,"time":80073,"read_errs":0,"outs_state":13,"uptime":265200,"wifi":-39}
 2022/06/29-10:15:46: FrmCtr008 - {"t_air":0,"h_air":0,"co2":0,"time":80123,"read_errs":0,"outs_state":0,"uptime":505201,"wifi":-63}
 2022/06/29-10:19:55: FrmCtr009 - {"t_air":25.9,"h_air":45.7,"co2":0,"time":80373,"read_errs":0,"outs_state":13,"uptime":265500,"wifi":-49}
+2022/06/29-11:25:45: FrmCtr008 - {"t_air":0,"h_air":0,"co2":0,"time":84323,"read_errs":0,"outs_state":0,"uptime":509401,"wifi":-62}
+2022/06/29-11:59:55: FrmCtr009 - {"t_air":25.9,"h_air":41.6,"co2":0,"time":86372,"read_errs":0,"outs_state":0,"uptime":271500,"wifi":-49}
+2022/06/30-12:00:45: FrmCtr008 - {"t_air":0,"h_air":0,"co2":0,"time":23,"read_errs":0,"outs_state":0,"uptime":511501,"wifi":-62}

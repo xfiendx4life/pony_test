@@ -2,7 +2,6 @@ package deliver
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -17,9 +16,14 @@ type del struct {
 }
 
 type RpcData struct {
-	ID     string   `json:"id"`
+	ID     string   `json:"id,omitempty"`
 	Method string   `json:"method"`
 	Params []string `json:"params"` // ? change to interface
+}
+
+type Payload struct {
+	Method string   `json:"method"`
+	Params []string `json:"params"`
 }
 
 func New(cStorage *sync.Map) Deliver {
@@ -59,12 +63,19 @@ func (d *del) SendRPC(ctx echo.Context) error {
 		log.Printf("can't decode incoming json: %s\n", err)
 		return echo.NewHTTPError(http.StatusBadRequest, "can't decode data")
 	}
+	id := data.ID
+	data.ID = ""
+	pl, err := json.Marshal(data)
+	if err != nil {
+		log.Printf("can't encode incoming json: %s\n", err)
+		return echo.NewHTTPError(http.StatusBadRequest, "can't encode data")
+	}
 	fakeMessage := models.Message{
-		ID: data.ID,
-		Data: fmt.Sprintf(`"method":"%s", "params":"%v"`,
-			data.Method, data.Params),
+		ID:        id,
+		Data:      string(pl),
 		TimeStamp: time.Now(),
 	}
+	log.Printf("%#v", data.Params)
 	d.commonStorage.Store("rpc", &fakeMessage)
 	log.Println("data passed to storage")
 	return ctx.NoContent(http.StatusOK)
