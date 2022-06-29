@@ -27,14 +27,14 @@ func TestListID(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	storage.Store(testMessage.ID, testMessage)
+	storage.Store(testMessage.ID, &testMessage)
 	d := deliver.New(&storage)
 	err := d.ListID(c)
 	require.NoError(t, err)
-	var tt []time.Time
+	var tt []map[string]time.Time
 	err = json.Unmarshal(rec.Body.Bytes(), &tt)
 	require.NoError(t, err)
-	require.EqualValues(t, testMessage.TimeStamp.UTC(), tt[0].UTC())
+	require.EqualValues(t, testMessage.TimeStamp.UTC(), tt[0]["FrmCtr010"].UTC())
 }
 
 func TestGetID(t *testing.T) {
@@ -46,7 +46,7 @@ func TestGetID(t *testing.T) {
 	c.SetParamNames("id")
 	c.SetParamValues("FrmCtr010")
 
-	storage.Store(testMessage.ID, testMessage)
+	storage.Store(testMessage.ID, &testMessage)
 	d := deliver.New(&storage)
 	err := d.GetDataById(c)
 	require.NoError(t, err)

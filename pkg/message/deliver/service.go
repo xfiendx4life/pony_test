@@ -20,9 +20,10 @@ func New(cStorage *sync.Map) Deliver {
 }
 
 func (d *del) ListID(ctx echo.Context) error {
-	res := make([]time.Time, 0)
+	res := make([]map[string]time.Time, 0)
 	d.commonStorage.Range(func(key, value any) bool {
-		res = append(res, value.(*models.Message).TimeStamp)
+		v := value.(*models.Message)
+		res = append(res, map[string]time.Time{v.ID: v.TimeStamp})
 		return true
 	})
 	if len(res) > 0 {
@@ -35,7 +36,7 @@ func (d *del) ListID(ctx echo.Context) error {
 func (d *del) GetDataById(ctx echo.Context) error {
 	id := ctx.Param("id")
 	if data, ok := d.commonStorage.Load(id); ok {
-		return ctx.JSON(http.StatusOK, data.(models.Message))
+		return ctx.JSON(http.StatusOK, data.(*models.Message))
 	}
 	return ctx.NoContent(http.StatusNotFound)
 
