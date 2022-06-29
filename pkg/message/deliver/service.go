@@ -1,6 +1,8 @@
 package deliver
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -11,6 +13,12 @@ import (
 
 type del struct {
 	commonStorage *sync.Map
+}
+
+type RpcData struct {
+	ID     string   `json:"id"`
+	Method string   `json:"method"`
+	Params []string `json:"params"` // ? change to interface
 }
 
 func New(cStorage *sync.Map) Deliver {
@@ -42,5 +50,13 @@ func (d *del) GetDataById(ctx echo.Context) error {
 
 }
 func (d *del) SendRPC(ctx echo.Context) error {
-	return nil
+	data := RpcData{}
+	err := json.NewDecoder(ctx.Request().Body).Decode(&data)
+	if err != nil {
+		log.Printf("can't decode incoming json: %s\n", err)
+		return echo.NewHTTPError(http.StatusBadRequest, "can't decode data")
+	}
+	d.commonStorage.Store("rpc", data)
+	log.Println("data passed to storage")
+	return ctx.NoContent(http.StatusOK)
 }
