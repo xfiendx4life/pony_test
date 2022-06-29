@@ -2,6 +2,7 @@ package deliver
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -30,8 +31,10 @@ func New(cStorage *sync.Map) Deliver {
 func (d *del) ListID(ctx echo.Context) error {
 	res := make([]map[string]time.Time, 0)
 	d.commonStorage.Range(func(key, value any) bool {
-		v := value.(*models.Message)
-		res = append(res, map[string]time.Time{v.ID: v.TimeStamp})
+		if key != "rpc" {
+			v := value.(*models.Message)
+			res = append(res, map[string]time.Time{v.ID: v.TimeStamp})
+		}
 		return true
 	})
 	if len(res) > 0 {
@@ -56,7 +59,13 @@ func (d *del) SendRPC(ctx echo.Context) error {
 		log.Printf("can't decode incoming json: %s\n", err)
 		return echo.NewHTTPError(http.StatusBadRequest, "can't decode data")
 	}
-	d.commonStorage.Store("rpc", data)
+	fakeMessage := models.Message{
+		ID: data.ID,
+		Data: fmt.Sprintf(`"method":"%s", "params":"%v"`,
+			data.Method, data.Params),
+		TimeStamp: time.Now(),
+	}
+	d.commonStorage.Store("rpc", &fakeMessage)
 	log.Println("data passed to storage")
 	return ctx.NoContent(http.StatusOK)
 }

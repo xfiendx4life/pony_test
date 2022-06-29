@@ -3,6 +3,7 @@ package deliver_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"sync"
@@ -69,6 +70,7 @@ func TestGetID(t *testing.T) {
 func TestRpc(t *testing.T) {
 	e := echo.New()
 	js, _ := json.Marshal(rpc)
+	fmt.Println(string(js))
 	req := httptest.NewRequest(http.MethodPost, "/rpc",
 		bytes.NewReader(js))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -81,6 +83,6 @@ func TestRpc(t *testing.T) {
 	require.NoError(t, err)
 	tt, ok := storage.Load("rpc")
 	require.True(t, ok)
-	require.IsType(t, deliver.RpcData{}, tt)
-	require.EqualValues(t, rpc, tt)
+	// require.IsType(t, *models.Message, tt)
+	require.EqualValues(t, "FrmCtr010", tt.(*models.Message).ID)
 }

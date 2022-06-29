@@ -28,6 +28,7 @@ func (r *RestServer) StartServer(ctx context.Context, host string, port int) (er
 	default:
 		r.GET("/:id", r.del.GetDataById)
 		r.GET("/list", r.del.ListID)
+		r.POST("/rpc", r.del.SendRPC)
 		go func() {
 			log.Printf("starting server at %s:%d\n", host, port)
 			r.HideBanner = true
