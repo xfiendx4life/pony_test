@@ -16,9 +16,9 @@ type del struct {
 }
 
 type RpcData struct {
-	ID     string   `json:"id,omitempty"`
-	Method string   `json:"method"`
-	Params []string `json:"params"` // ? change to interface
+	ID     string            `json:"id,omitempty"`
+	Method string            `json:"method"`
+	Params map[string]string `json:"params"` // ? change to interface
 }
 
 type Payload struct {
@@ -34,13 +34,20 @@ func New(cStorage *sync.Map) Deliver {
 
 func (d *del) ListID(ctx echo.Context) error {
 	res := make([]map[string]time.Time, 0)
+	var err error
 	d.commonStorage.Range(func(key, value any) bool {
 		if key != "rpc" {
-			v := value.(*models.Message)
+			v, ok := value.(*models.Message)
+			if !ok {
+				err = echo.NewHTTPError(http.StatusInternalServerError, "can't parse data")
+			}
 			res = append(res, map[string]time.Time{v.ID: v.TimeStamp})
 		}
 		return true
 	})
+	if err != nil {
+		return err
+	}
 	if len(res) > 0 {
 		return ctx.JSON(200, res)
 	}

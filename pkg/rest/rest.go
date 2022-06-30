@@ -21,7 +21,7 @@ func New(del deliver.Deliver) *RestServer {
 	}
 }
 
-func (r *RestServer) StartServer(ctx context.Context, host string, port int) (err error) {
+func (r *RestServer) StartServer(ctx context.Context, host, port string) (err error) {
 	select {
 	case <-ctx.Done():
 		return fmt.Errorf("done with context")
@@ -30,9 +30,9 @@ func (r *RestServer) StartServer(ctx context.Context, host string, port int) (er
 		r.GET("/list", r.del.ListID)
 		r.POST("/rpc", r.del.SendRPC)
 		go func() {
-			log.Printf("starting server at %s:%d\n", host, port)
+			log.Printf("starting server at %s:%s\n", host, port)
 			r.HideBanner = true
-			if err = r.Start(fmt.Sprintf("%s:%d", host, port)); err != nil {
+			if err = r.Start(fmt.Sprintf("%s:%s", host, port)); err != nil {
 				log.Printf("error while working with server: %s\n", err)
 			}
 		}()

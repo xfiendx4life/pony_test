@@ -1,0 +1,49 @@
+run:
+  # The default concurrency value is the number of available CPU.
+  concurrency: 4
+  timeout: 5m
+  issues-exit-code: 2
+  tests: true
+  skip-dirs-use-default: false
+  modules-download-mode: readonly
+  allow-parallel-runners: false
+  go: '1.18'
+linters:
+  disable-all: true
+  enable:
+    - gofmt # форматирование кода (пробелы, отступы, скобки)
+    - goimports # обновление списка imports
+    - govet # общий анализ возможных багов
+    - goconst # нахождение строк, которые следует вынести в константы
+    - funlen # детектирование слишком крупных функций
+    - errcheck # проверка на обработку всех ошибок
+    - deadcode # детектирование не использованного кода
+    - gochecknoglobals # поиск глобальных переменных
+
+linters-settings:
+  goimports:
+    # указываем префикс локальных импортов, они будут группироваться
+    local-prefixes: path/to/module
+  govet:
+    # проверка на использование переменных «в тени»
+    check-shadowing: true
+  goconst:
+    # goconst находит строки не меньше 2 символов, которые встречаются хотя бы 2 раза
+    min-len: 2
+    min-occurrences: 2
+  funlen:
+    # функция помечается длинной если она больше 100 строк кода либо больше 50 операций
+    lines: 100
+    statements: 50
+  errcheck:
+    # report about not checking of errors in type assertions: `a := b.(MyStruct)`;
+    # default is false: such cases aren't reported by default.
+    check-type-assertions: true
+    # report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`;
+    # default is false: such cases aren't reported by default.
+    check-blank: true
+issues:
+  exclude-rules:
+    # Disable linters that are annoying in tests.
+    - path: _test\.go
+      linters: [gochecknoglobals, errcheck]

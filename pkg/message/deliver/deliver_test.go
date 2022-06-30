@@ -26,7 +26,7 @@ var (
 	rpc = deliver.RpcData{
 		ID:     "FrmCtr010",
 		Method: "testMethod",
-		Params: []string{"testParam1", "testParam2"},
+		Params: map[string]string{"testParam1": "testVal1"},
 	}
 )
 
@@ -62,8 +62,6 @@ func TestGetID(t *testing.T) {
 	var tt models.Message
 	err = json.Unmarshal(rec.Body.Bytes(), &tt)
 	require.NoError(t, err)
-	//TODO: find out what's wrong
-	// !require.EqualValues(t, testMessage, tt)
 	require.NotNil(t, tt)
 }
 

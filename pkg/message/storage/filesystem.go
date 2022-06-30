@@ -37,7 +37,6 @@ func New(path string) (Storage, error) {
 	}, nil
 }
 
-//TODO: change it to proceed wrong data
 func parseMessage(data models.Message) []byte {
 	return []byte(fmt.Sprintf("%s: %s - %s\n", data.TimeStamp.Format("2006/01/02-03:04:05"), data.ID, data.Data))
 }

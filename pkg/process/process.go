@@ -21,9 +21,8 @@ type MQTTProcess struct {
 }
 
 type Payload struct {
-	Method string `json:"method"`
-	// TODO: change params to map
-	Params []string `json:"params"`
+	Method string            `json:"method"`
+	Params map[string]string `json:"params"`
 }
 
 func New(common *sync.Map, pool usecase.CaseWorker) *MQTTProcess {
@@ -44,7 +43,10 @@ func (mq *MQTTProcess) Pub(ctx context.Context, client *mqtt.Client) {
 			data, ok := mq.commonStorage.LoadAndDelete("rpc")
 			// log.Println(data)
 			if ok {
-				d := data.(*models.Message)
+				d, ok := data.(*models.Message)
+				if !ok {
+					mq.Ers <- fmt.Errorf("can't parse data")
+				}
 				p := Payload{}
 				err := json.NewDecoder(strings.NewReader(d.Data)).Decode(&p)
 				if err != nil {
@@ -53,11 +55,11 @@ func (mq *MQTTProcess) Pub(ctx context.Context, client *mqtt.Client) {
 					continue
 				}
 				payload := struct {
-					Ponyrpc  string   `json:"ponyrpc"`
-					Method   string   `json:"method"`
-					Params   []string `json:"params"`
-					Id       int      `json:"id"`
-					Retry_id int      `json:"retry_id"`
+					Ponyrpc  string            `json:"ponyrpc"`
+					Method   string            `json:"method"`
+					Params   map[string]string `json:"params"`
+					Id       int               `json:"id"`
+					Retry_id int               `json:"retry_id"`
 				}{
 					Ponyrpc:  "2.0",
 					Method:   p.Method,

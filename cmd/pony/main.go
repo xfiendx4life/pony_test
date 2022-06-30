@@ -14,9 +14,8 @@ import (
 	"github.com/xfiendx4life/ponytest/pkg/rest"
 )
 
-var commonStorage = sync.Map{}
-
 func main() {
+	var commonStorage = sync.Map{}
 	store, err := storage.New("storage")
 	if err != nil {
 		log.Fatalf("can't create store %s", err)
@@ -29,7 +28,13 @@ func main() {
 	del := deliver.New(&commonStorage)
 	st := make(chan struct{})
 	server := rest.New(del)
-	go server.StartServer(ctx, "localhost", 8000)
+	host := os.Getenv("HOST")
+	port := os.Getenv("PORT")
+	go func() {
+		if er := server.StartServer(ctx, host, port); er != nil {
+			log.Fatalf("server stopped %s", err)
+		}
+	}()
 	go func() {
 		err = pr.Work(ctx, "104.236.0.154", 1883, st)
 		log.Println(err)
