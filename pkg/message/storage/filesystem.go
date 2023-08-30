@@ -6,12 +6,14 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/xfiendx4life/ponytest/pkg/models"
 )
 
 type fileSystem struct {
 	path string
+	mu   sync.Mutex
 }
 
 // New storage in filesystem
@@ -45,6 +47,8 @@ func (fs *fileSystem) Write(ctx context.Context, data models.Message) error {
 	case <-ctx.Done():
 		return fmt.Errorf("done with context")
 	default:
+		fs.mu.Lock()
+		defer fs.mu.Unlock()
 		filename := filepath.Join(fs.path, "storage")
 		file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 		if err != nil {

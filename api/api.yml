@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info: 
+  title: PonyMQ
+  description: open api specification for pony lab service
+  version: 1.0.0
+components:
+  schemas:
+    Message:
+      type: object
+      properties: 
+        id:
+          type: string
+        data: 
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      
+paths:
+  /list:
+    get:
+      operationId: list all messages
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                description: result data
+                type: array
+                items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      datestamp:
+                        type: string
+                        format: date-time
+        '204':
+          description: no content
+  /:
+    get:
+      operationId: get item by id
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Message"
+        '400':
+          description: bad request
+  /rpc:
+    post:
+      operationId: send rpc
+      requestBody:
+        description: method and parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                method:
+                  type: string
+                params:
+                  type: object
+                  additionalProperties:
+                    type: string
+      responses:
+        '200':
+          description: ok
+                  
+
+
